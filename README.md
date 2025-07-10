@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Job Application Tracker - React & Next.js  
 
-## Getting Started
 
-First, run the development server:
+A sleek and efficient **Job Application Tracker** built with **React** and **Next.js** to help job seekers organize, track, and manage their job applications seamlessly.  
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features  
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+✅ **Add & Manage Applications** – Track job titles, companies, status, deadlines, and more.  
+✅ **Interactive Dashboard** – Visualize application statistics (applied, interviews, offers).  
+✅ **Search & Filter** – Easily find applications by company, status, or date.  
+✅ **Responsive Design** – Works smoothly on desktop, tablet, and mobile.  
+✅ **Dark/Light Mode** – Eye-friendly themes for late-night job hunting.  
+✅ **Authentication (Optional)** – Secure user accounts with NextAuth.js.  
+✅ **Data Persistence** – Save applications using local storage or a backend (Firebase, MongoDB, etc.).  
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Live Demo  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Check out the live demo [here](#) (coming soon).  
 
-## Learn More
+## 🛠 Tech Stack  
 
-To learn more about Next.js, take a look at the following resources:
+- **Frontend**: React, Next.js, TypeScript (optional)  
+- **Styling**: Tailwind CSS / Styled Components  
+- **State Management**: React Context API / Zustand / Redux  
+- **Backend (Optional)**: Next.js API Routes, Firebase, or MongoDB  
+- **Authentication (Optional)**: NextAuth.js  
+- **Deployment**: Vercel / Netlify  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📦 Installation  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Clone the repository**  
+   ```bash
+   git clone https://github.com/sunnnyyx/careercompass.git
+   cd careercompass
