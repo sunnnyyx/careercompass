@@ -4,7 +4,6 @@ import { useState } from "react";
 import AddApplicationForm from "@/components/AddApplicationForm";
 import ApplicationList from "@/components/ApplicationList";
 
-// Define the Application type
 type Application = {
   id: number;
   company: string;
@@ -17,13 +16,19 @@ type Application = {
 
 export default function HomePage() {
   const [applications, setApplications] = useState<Application[]>([]);
+  const [editingApp, setEditingApp] = useState<Application | null>(null);
 
-  // Function to add new application
   const handleAddApplication = (newApp: Application) => {
     setApplications([newApp, ...applications]);
   };
 
-  // Function to delete application by ID
+  const handleUpdateApplication = (updatedApp: Application) => {
+    setApplications(applications.map((app) =>
+      app.id === updatedApp.id ? updatedApp : app
+    ));
+    setEditingApp(null);
+  };
+
   const handleDelete = (id: number) => {
     setApplications(applications.filter((app) => app.id !== id));
   };
@@ -34,10 +39,16 @@ export default function HomePage() {
         Job Application Tracker
       </h1>
 
-      <AddApplicationForm onAddApplication={handleAddApplication} />
+      <AddApplicationForm
+        onAddApplication={handleAddApplication}
+        onUpdateApplication={handleUpdateApplication}
+        editingApp={editingApp}
+      />
+
       <ApplicationList
         applications={applications}
         onDelete={handleDelete}
+         onEdit={setEditingApp} 
       />
     </main>
   );

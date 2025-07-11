@@ -1,7 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-// Application type — same as in page.tsx
 type Application = {
   id: number;
   company: string;
@@ -12,12 +11,17 @@ type Application = {
   notes?: string;
 };
 
-// Only define props for THIS component (remove unrelated ones)
 interface AddApplicationFormProps {
   onAddApplication: (application: Application) => void;
+  onUpdateApplication: (application: Application) => void;
+  editingApp: Application | null;
 }
 
-export default function AddApplicationForm({ onAddApplication }: AddApplicationFormProps) {
+export default function AddApplicationForm({
+  onAddApplication,
+  onUpdateApplication,
+  editingApp,
+}: AddApplicationFormProps) {
   const [company, setCompany] = useState("");
   const [title, setTitle] = useState("");
   const [dateApplied, setDateApplied] = useState("");
@@ -25,19 +29,36 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
   const [url, setUrl] = useState("");
   const [notes, setNotes] = useState("");
 
+  // Prefill form if editing
+  useEffect(() => {
+    if (editingApp) {
+      setCompany(editingApp.company);
+      setTitle(editingApp.title);
+      setDateApplied(editingApp.date);
+      setStatus(editingApp.status);
+      setUrl(editingApp.url || "");
+      setNotes(editingApp.notes || "");
+    }
+  }, [editingApp]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Pass new application to parent
-    onAddApplication({
-      id: Date.now(), // temporary unique ID
+    const appData: Application = {
+      id: editingApp ? editingApp.id : Date.now(),
       company,
       title,
       date: dateApplied,
       status,
       url,
       notes,
-    });
+    };
+
+    if (editingApp) {
+      onUpdateApplication(appData);
+    } else {
+      onAddApplication(appData);
+    }
 
     // Reset form
     setCompany("");
@@ -54,7 +75,7 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
       className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg border border-gray-200"
     >
       <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-        Add Job Application
+        {editingApp ? "Edit Application" : "Add Job Application"}
       </h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -65,8 +86,7 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             required
-            className="mt-1 w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g. Google"
+            className="mt-1 w-full rounded-lg border border-gray-300 p-2"
           />
         </div>
 
@@ -77,8 +97,7 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            className="mt-1 w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g. Frontend Developer"
+            className="mt-1 w-full rounded-lg border border-gray-300 p-2"
           />
         </div>
 
@@ -89,7 +108,7 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
             value={dateApplied}
             onChange={(e) => setDateApplied(e.target.value)}
             required
-            className="mt-1 w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 w-full rounded-lg border border-gray-300 p-2"
           />
         </div>
 
@@ -98,7 +117,7 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 w-full rounded-lg border border-gray-300 p-2"
           >
             <option>Applied</option>
             <option>Interview Scheduled</option>
@@ -115,8 +134,7 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g. https://careers.google.com/job123"
+            className="mt-1 w-full rounded-lg border border-gray-300 p-2"
           />
         </div>
 
@@ -126,8 +144,7 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={4}
-            className="mt-1 w-full rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="e.g. Contacted via LinkedIn, interview scheduled..."
+            className="mt-1 w-full rounded-lg border border-gray-300 p-2"
           />
         </div>
       </div>
@@ -135,9 +152,9 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
       <div className="mt-6 text-center">
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition-colors duration-200"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg"
         >
-          Add Application
+          {editingApp ? "Update Application" : "Add Application"}
         </button>
       </div>
     </form>

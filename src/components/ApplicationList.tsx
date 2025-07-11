@@ -1,6 +1,6 @@
 "use client";
 
-interface Application {
+type Application = {
   id: number;
   company: string;
   title: string;
@@ -8,11 +8,12 @@ interface Application {
   status: string;
   url?: string;
   notes?: string;
-}
+};
 
 interface ApplicationListProps {
   applications: Application[];
   onDelete: (id: number) => void;
+  onEdit: (app: Application) => void;
 }
 
 const statusColor = {
@@ -24,7 +25,11 @@ const statusColor = {
   "Withdrawn": "bg-gray-300 text-gray-700",
 };
 
-export default function ApplicationList({ applications, onDelete }: ApplicationListProps) {
+export default function ApplicationList({
+  applications,
+  onDelete,
+  onEdit,
+}: ApplicationListProps) {
   return (
     <div className="max-w-4xl mx-auto mt-10">
       <h2 className="text-xl font-semibold mb-4 text-gray-800 text-center">
@@ -61,7 +66,12 @@ export default function ApplicationList({ applications, onDelete }: ApplicationL
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
-                    <button className="text-sm text-blue-600 hover:underline">Edit</button>
+                    <button
+                      onClick={() => onEdit(app)}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      Edit
+                    </button>
                     <button
                       onClick={() => onDelete(app.id)}
                       className="text-sm text-red-600 hover:underline"
