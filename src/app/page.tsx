@@ -26,27 +26,30 @@ type Application = {
 export default function HomePage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [editingApp, setEditingApp] = useState<Application | null>(null);
+  const [loading, setLoading] = useState(true); // 👈 Added loading state
 
   const collectionRef = collection(db, "applications");
 
   // 🔁 Fetch applications on load
   useEffect(() => {
-  const fetchApplications = async () => {
-    try {
-      const collectionRef = collection(db, "applications"); // Moved here
-      const snapshot = await getDocs(collectionRef);
-      const apps = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Application[];
-      setApplications(apps);
-    } catch (error) {
-      console.error("Error fetching applications:", error);
-    }
-  };
+    const fetchApplications = async () => {
+      setLoading(true); // 👈 Start loading
+      try {
+        const snapshot = await getDocs(collectionRef);
+        const apps = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Application[];
+        setApplications(apps);
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      } finally {
+        setLoading(false); // 👈 Stop loading
+      }
+    };
 
-  fetchApplications();
-}, []);
+    fetchApplications();
+  }, [collectionRef]);
 
   // ➕ Add new application
   const handleAddApplication = async (newApp: Omit<Application, "id">) => {
@@ -95,11 +98,15 @@ export default function HomePage() {
         editingApp={editingApp}
       />
 
-      <ApplicationList
-        applications={applications}
-        onDelete={handleDelete}
-        onEdit={setEditingApp}
-      />
+      {loading ? (
+        <p className="text-center text-gray-500 mt-8">Loading...</p>
+      ) : (
+        <ApplicationList
+          applications={applications}
+          onDelete={handleDelete}
+          onEdit={setEditingApp}
+        />
+      )}
     </main>
   );
 }
