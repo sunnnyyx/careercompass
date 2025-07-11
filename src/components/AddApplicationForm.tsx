@@ -1,7 +1,11 @@
 "use client";
 import { useState } from "react";
 
-export default function AddApplicationForm() {
+interface AddApplicationFormProps {
+  onAddApplication: (application: unknown) => void;
+}
+
+export default function AddApplicationForm({ onAddApplication }: AddApplicationFormProps) {
   const [company, setCompany] = useState("");
   const [title, setTitle] = useState("");
   const [dateApplied, setDateApplied] = useState("");
@@ -11,7 +15,17 @@ export default function AddApplicationForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ company, title, dateApplied, status, url, notes });
+
+    onAddApplication({
+      id: Date.now(), // temporary ID
+      company,
+      title,
+      date: dateApplied,
+      status,
+      url,
+      notes,
+    });
+
     setCompany("");
     setTitle("");
     setDateApplied("");
