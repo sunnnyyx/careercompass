@@ -1,7 +1,7 @@
 "use client";
 
 type Application = {
-  id: number;
+  id: string; // Updated to string for Firestore compatibility
   company: string;
   title: string;
   date: string;
@@ -12,7 +12,7 @@ type Application = {
 
 interface ApplicationListProps {
   applications: Application[];
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
   onEdit: (app: Application) => void;
 }
 

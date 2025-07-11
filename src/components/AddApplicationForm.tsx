@@ -1,8 +1,9 @@
 "use client";
+
 import { useState, useEffect } from "react";
 
 type Application = {
-  id: number;
+  id: string;
   company: string;
   title: string;
   date: string;
@@ -12,7 +13,7 @@ type Application = {
 };
 
 interface AddApplicationFormProps {
-  onAddApplication: (application: Application) => void;
+  onAddApplication: (application: Omit<Application, "id">) => void;
   onUpdateApplication: (application: Application) => void;
   editingApp: Application | null;
 }
@@ -29,7 +30,7 @@ export default function AddApplicationForm({
   const [url, setUrl] = useState("");
   const [notes, setNotes] = useState("");
 
-  // Prefill form if editing
+  // Prefill form when editing
   useEffect(() => {
     if (editingApp) {
       setCompany(editingApp.company);
@@ -41,11 +42,19 @@ export default function AddApplicationForm({
     }
   }, [editingApp]);
 
+  const resetForm = () => {
+    setCompany("");
+    setTitle("");
+    setDateApplied("");
+    setStatus("Applied");
+    setUrl("");
+    setNotes("");
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const appData: Application = {
-      id: editingApp ? editingApp.id : Date.now(),
+    const applicationData = {
       company,
       title,
       date: dateApplied,
@@ -55,18 +64,12 @@ export default function AddApplicationForm({
     };
 
     if (editingApp) {
-      onUpdateApplication(appData);
+      onUpdateApplication({ ...applicationData, id: editingApp.id });
     } else {
-      onAddApplication(appData);
+      onAddApplication(applicationData);
     }
 
-    // Reset form
-    setCompany("");
-    setTitle("");
-    setDateApplied("");
-    setStatus("Applied");
-    setUrl("");
-    setNotes("");
+    resetForm();
   };
 
   return (
