@@ -1,7 +1,7 @@
 "use client";
 
 type Application = {
-  id: string; // Updated to string for Firestore compatibility
+  id: string; 
   company: string;
   title: string;
   date: string;
