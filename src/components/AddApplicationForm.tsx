@@ -1,10 +1,7 @@
 "use client";
 import { useState } from "react";
 
-interface AddApplicationFormProps {
-  onAddApplication: (application: Application) => void;
-}
-
+// Application type — same as in page.tsx
 type Application = {
   id: number;
   company: string;
@@ -15,6 +12,10 @@ type Application = {
   notes?: string;
 };
 
+// Only define props for THIS component (remove unrelated ones)
+interface AddApplicationFormProps {
+  onAddApplication: (application: Application) => void;
+}
 
 export default function AddApplicationForm({ onAddApplication }: AddApplicationFormProps) {
   const [company, setCompany] = useState("");
@@ -27,8 +28,9 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Pass new application to parent
     onAddApplication({
-      id: Date.now(), // temporary ID
+      id: Date.now(), // temporary unique ID
       company,
       title,
       date: dateApplied,
@@ -37,6 +39,7 @@ export default function AddApplicationForm({ onAddApplication }: AddApplicationF
       notes,
     });
 
+    // Reset form
     setCompany("");
     setTitle("");
     setDateApplied("");

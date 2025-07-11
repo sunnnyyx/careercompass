@@ -1,15 +1,18 @@
 "use client";
 
+interface Application {
+  id: number;
+  company: string;
+  title: string;
+  date: string;
+  status: string;
+  url?: string;
+  notes?: string;
+}
+
 interface ApplicationListProps {
-  applications: {
-    id: number;
-    company: string;
-    title: string;
-    date: string;
-    status: string;
-    url?: string;
-    notes?: string;
-  }[];
+  applications: Application[];
+  onDelete: (id: number) => void;
 }
 
 const statusColor = {
@@ -21,7 +24,7 @@ const statusColor = {
   "Withdrawn": "bg-gray-300 text-gray-700",
 };
 
-export default function ApplicationList({ applications }: ApplicationListProps) {
+export default function ApplicationList({ applications, onDelete }: ApplicationListProps) {
   return (
     <div className="max-w-4xl mx-auto mt-10">
       <h2 className="text-xl font-semibold mb-4 text-gray-800 text-center">
@@ -50,14 +53,21 @@ export default function ApplicationList({ applications }: ApplicationListProps) 
                   <td className="px-6 py-4 whitespace-nowrap">{app.date}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
-                      className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${statusColor[app.status as keyof typeof statusColor]}`}
+                      className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
+                        statusColor[app.status as keyof typeof statusColor]
+                      }`}
                     >
                       {app.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center space-x-2">
                     <button className="text-sm text-blue-600 hover:underline">Edit</button>
-                    <button className="text-sm text-red-600 hover:underline">Delete</button>
+                    <button
+                      onClick={() => onDelete(app.id)}
+                      className="text-sm text-red-600 hover:underline"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

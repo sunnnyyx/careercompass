@@ -16,8 +16,17 @@ type Application = {
 };
 
 export default function HomePage() {
-  // Use Application[] as the state type
   const [applications, setApplications] = useState<Application[]>([]);
+
+  // Function to add new application
+  const handleAddApplication = (newApp: Application) => {
+    setApplications([newApp, ...applications]);
+  };
+
+  // Function to delete application by ID
+  const handleDelete = (id: number) => {
+    setApplications(applications.filter((app) => app.id !== id));
+  };
 
   return (
     <main className="min-h-screen bg-gray-100 p-6">
@@ -25,13 +34,11 @@ export default function HomePage() {
         Job Application Tracker
       </h1>
 
-      <AddApplicationForm
-        onAddApplication={(newApp: Application) =>
-          setApplications([newApp, ...applications])
-        }
+      <AddApplicationForm onAddApplication={handleAddApplication} />
+      <ApplicationList
+        applications={applications}
+        onDelete={handleDelete}
       />
-
-      <ApplicationList applications={applications} />
     </main>
   );
 }
