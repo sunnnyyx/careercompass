@@ -2,8 +2,19 @@
 import { useState } from "react";
 
 interface AddApplicationFormProps {
-  onAddApplication: (application: unknown) => void;
+  onAddApplication: (application: Application) => void;
 }
+
+type Application = {
+  id: number;
+  company: string;
+  title: string;
+  date: string;
+  status: string;
+  url?: string;
+  notes?: string;
+};
+
 
 export default function AddApplicationForm({ onAddApplication }: AddApplicationFormProps) {
   const [company, setCompany] = useState("");
