@@ -4,7 +4,14 @@ import { useEffect, useState } from "react";
 import AddApplicationForm from "@/components/AddApplicationForm";
 import ApplicationList from "@/components/ApplicationList";
 import { db } from "@/lib/firebase";
-import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
 
 type Application = {
   id: string;
@@ -20,28 +27,31 @@ export default function HomePage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [editingApp, setEditingApp] = useState<Application | null>(null);
 
-  // 🔁 Fetch from Firestore on page load
+  const collectionRef = collection(db, "applications");
+
+  // 🔁 Fetch applications on load
   useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, "applications"));
-        const apps = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Application[];
-        setApplications(apps);
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-      }
-    };
+  const fetchApplications = async () => {
+    try {
+      const collectionRef = collection(db, "applications"); // Moved here
+      const snapshot = await getDocs(collectionRef);
+      const apps = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Application[];
+      setApplications(apps);
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+    }
+  };
 
-    fetchApplications();
-  }, []);
+  fetchApplications();
+}, []);
 
-  // ➕ Add new app to Firestore
+  // ➕ Add new application
   const handleAddApplication = async (newApp: Omit<Application, "id">) => {
     try {
-      const docRef = await addDoc(collection(db, "applications"), newApp);
+      const docRef = await addDoc(collectionRef, newApp);
       const addedApp: Application = { ...newApp, id: docRef.id };
       setApplications((prev) => [addedApp, ...prev]);
     } catch (error) {
@@ -49,11 +59,11 @@ export default function HomePage() {
     }
   };
 
-  // ✏️ Update app in Firestore
+  // ✏️ Update application
   const handleUpdateApplication = async (updatedApp: Application) => {
     try {
-      const docRef = doc(db, "applications", updatedApp.id);
-      await updateDoc(docRef, updatedApp);
+      const appRef = doc(db, "applications", updatedApp.id);
+      await updateDoc(appRef, updatedApp);
       setApplications((prev) =>
         prev.map((app) => (app.id === updatedApp.id ? updatedApp : app))
       );
@@ -63,7 +73,7 @@ export default function HomePage() {
     }
   };
 
-  // ❌ Delete app from Firestore
+  // ❌ Delete application
   const handleDelete = async (id: string) => {
     try {
       await deleteDoc(doc(db, "applications", id));
