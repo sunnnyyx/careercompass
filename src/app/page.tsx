@@ -26,32 +26,31 @@ type Application = {
 export default function HomePage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [editingApp, setEditingApp] = useState<Application | null>(null);
-  const [loading, setLoading] = useState(true); // 👈 Added loading state
+  const [loading, setLoading] = useState(true);
 
   const collectionRef = collection(db, "applications");
 
-  // 🔁 Fetch applications on load
-  useEffect(() => {
-    const fetchApplications = async () => {
-      setLoading(true); // 👈 Start loading
-      try {
-        const snapshot = await getDocs(collectionRef);
-        const apps = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Application[];
-        setApplications(apps);
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-      } finally {
-        setLoading(false); // 👈 Stop loading
-      }
-    };
+ useEffect(() => {
+  const fetchApplications = async () => {
+    try {
+      const collectionRef = collection(db, "applications"); // Move here
+      const snapshot = await getDocs(collectionRef);
+      const apps = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Application[];
+      setApplications(apps);
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchApplications();
-  }, [collectionRef]);
+  fetchApplications();
+}, []); 
 
-  // ➕ Add new application
+
   const handleAddApplication = async (newApp: Omit<Application, "id">) => {
     try {
       const docRef = await addDoc(collectionRef, newApp);
@@ -62,7 +61,6 @@ export default function HomePage() {
     }
   };
 
-  // ✏️ Update application
   const handleUpdateApplication = async (updatedApp: Application) => {
     try {
       const appRef = doc(db, "applications", updatedApp.id);
@@ -76,7 +74,6 @@ export default function HomePage() {
     }
   };
 
-  // ❌ Delete application
   const handleDelete = async (id: string) => {
     try {
       await deleteDoc(doc(db, "applications", id));
@@ -87,26 +84,32 @@ export default function HomePage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold mb-8 text-center">
-        Job Application Tracker
-      </h1>
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 px-4 py-10">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-center text-blue-800 mb-10">
+          🎯 Job Application Tracker
+        </h1>
 
-      <AddApplicationForm
-        onAddApplication={handleAddApplication}
-        onUpdateApplication={handleUpdateApplication}
-        editingApp={editingApp}
-      />
+        <div className="bg-white shadow-xl rounded-2xl p-6 mb-10">
+          <AddApplicationForm
+            onAddApplication={handleAddApplication}
+            onUpdateApplication={handleUpdateApplication}
+            editingApp={editingApp}
+          />
+        </div>
 
-      {loading ? (
-        <p className="text-center text-gray-500 mt-8">Loading...</p>
-      ) : (
-        <ApplicationList
-          applications={applications}
-          onDelete={handleDelete}
-          onEdit={setEditingApp}
-        />
-      )}
+        <div className="bg-white shadow-xl rounded-2xl p-6">
+          {loading ? (
+            <p className="text-center text-gray-500">Loading applications...</p>
+          ) : (
+            <ApplicationList
+              applications={applications}
+              onDelete={handleDelete}
+              onEdit={setEditingApp}
+            />
+          )}
+        </div>
+      </div>
     </main>
   );
 }
