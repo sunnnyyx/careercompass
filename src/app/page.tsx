@@ -86,9 +86,10 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 px-4 py-10">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-4xl font-extrabold text-center text-blue-800 mb-10">
-          🎯 Job Application Tracker
-        </h1>
+<h1 className="text-4xl font-bold mb-10 text-center text-blue-800 tracking-wide">
+   Career Compass
+</h1>
+
 
         <div className="bg-white shadow-xl rounded-2xl p-6 mb-10">
           <AddApplicationForm
