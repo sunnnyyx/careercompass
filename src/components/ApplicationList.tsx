@@ -1,5 +1,7 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
+
 type Application = {
   id: string;
   company: string;
@@ -16,13 +18,13 @@ interface ApplicationListProps {
   onEdit: (app: Application) => void;
 }
 
-const statusColor = {
-  Applied: "bg-blue-100 text-blue-800",
-  "Interview Scheduled": "bg-yellow-100 text-yellow-800",
-  Interviewed: "bg-purple-100 text-purple-800",
-  "Offer Received": "bg-green-100 text-green-800",
-  Rejected: "bg-red-100 text-red-800",
-  Withdrawn: "bg-gray-300 text-gray-700",
+const statusColors: Record<string, string> = {
+  "Applied": "bg-blue-100 text-blue-700",
+  "Interview Scheduled": "bg-yellow-100 text-yellow-700",
+  "Interviewed": "bg-purple-100 text-purple-700",
+  "Offer Received": "bg-green-100 text-green-700",
+  "Rejected": "bg-red-100 text-red-700",
+  "Withdrawn": "bg-gray-200 text-gray-700",
 };
 
 export default function ApplicationList({
@@ -31,63 +33,63 @@ export default function ApplicationList({
   onEdit,
 }: ApplicationListProps) {
   return (
-    <>
-      <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-        Your Applications
-      </h2>
+    <div className="max-w-6xl mx-auto mt-10 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <AnimatePresence>
+        {applications.map((app) => (
+          <motion.div
+            key={app.id}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow"
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="text-xl font-semibold text-gray-800">{app.company}</h3>
+              <span
+                className={`text-xs font-semibold px-2 py-1 rounded ${statusColors[app.status] || "bg-gray-100 text-gray-700"}`}
+              >
+                {app.status}
+              </span>
+            </div>
 
-      {applications.length === 0 ? (
-        <p className="text-center text-gray-500">No applications yet.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-xl overflow-hidden">
-            <thead className="bg-gray-100 text-gray-600">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-medium">Company</th>
-                <th className="px-6 py-3 text-left text-sm font-medium">Job Title</th>
-                <th className="px-6 py-3 text-left text-sm font-medium">Date Applied</th>
-                <th className="px-6 py-3 text-left text-sm font-medium">Status</th>
-                <th className="px-6 py-3 text-center text-sm font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-700">
-              {applications.map((app) => (
-                <tr
-                  key={app.id}
-                  className="hover:bg-blue-50 transition-colors duration-200"
-                >
-                  <td className="px-6 py-4">{app.company}</td>
-                  <td className="px-6 py-4">{app.title}</td>
-                  <td className="px-6 py-4">{app.date}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                        statusColor[app.status as keyof typeof statusColor]
-                      }`}
-                    >
-                      {app.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-center space-x-2">
-                    <button
-                      onClick={() => onEdit(app)}
-                      className="text-sm text-blue-600 hover:underline"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => onDelete(app.id)}
-                      className="text-sm text-red-600 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </>
+            <p className="text-gray-600 font-medium">{app.title}</p>
+            <p className="text-sm text-gray-500 mb-3">Applied on: {app.date}</p>
+
+            {app.url && (
+              <a
+                href={app.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 text-sm underline mb-2 inline-block"
+              >
+                View Job Posting
+              </a>
+            )}
+
+            {app.notes && (
+              <p className="text-sm text-gray-700 mt-2 bg-gray-50 p-2 rounded">
+                {app.notes}
+              </p>
+            )}
+
+            <div className="flex justify-between mt-4 pt-4 border-t">
+              <button
+                onClick={() => onEdit(app)}
+                className="text-sm text-blue-600 font-medium hover:underline"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => onDelete(app.id)}
+                className="text-sm text-red-600 font-medium hover:underline"
+              >
+                Delete
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+    </div>
   );
 }
