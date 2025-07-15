@@ -1,19 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import AddApplicationForm from "@/components/AddApplicationForm";
-import ApplicationList from "@/components/ApplicationList";
-import { db } from "@/lib/firebase";
+import { useEffect, useState } from 'react';
+import AddApplicationForm from '../components/AddApplicationForm';
+import ApplicationList from '../components/ApplicationList';
 import {
-  collection,
-  addDoc,
-  getDocs,
-  doc,
-  deleteDoc,
-  updateDoc,
-} from "firebase/firestore";
+  getApplicationsFromFirestore,
+  saveApplicationToFirestore,
+  deleteApplicationFromFirestore,
+  updateApplicationInFirestore,
+} from '../lib/firebase';
 
-type Application = {
+export interface Application {
   id: string;
   company: string;
   title: string;
@@ -21,95 +18,63 @@ type Application = {
   status: string;
   url?: string;
   notes?: string;
-};
+}
 
-export default function HomePage() {
+export default function Home() {
   const [applications, setApplications] = useState<Application[]>([]);
-  const [editingApp, setEditingApp] = useState<Application | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [editApp, setEditApp] = useState<Application | null>(null);
 
-  const collectionRef = collection(db, "applications");
-
- useEffect(() => {
-  const fetchApplications = async () => {
-    try {
-      const collectionRef = collection(db, "applications"); // Move here
-      const snapshot = await getDocs(collectionRef);
-      const apps = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Application[];
+  useEffect(() => {
+    const fetchApps = async () => {
+      const apps = await getApplicationsFromFirestore();
       setApplications(apps);
-    } catch (error) {
-      console.error("Error fetching applications:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    fetchApps();
+  }, []);
 
-  fetchApplications();
-}, []); 
-
-
-  const handleAddApplication = async (newApp: Omit<Application, "id">) => {
-    try {
-      const docRef = await addDoc(collectionRef, newApp);
-      const addedApp: Application = { ...newApp, id: docRef.id };
-      setApplications((prev) => [addedApp, ...prev]);
-    } catch (error) {
-      console.error("Error adding application:", error);
-    }
-  };
-
-  const handleUpdateApplication = async (updatedApp: Application) => {
-    try {
-      const appRef = doc(db, "applications", updatedApp.id);
-      await updateDoc(appRef, updatedApp);
-      setApplications((prev) =>
-        prev.map((app) => (app.id === updatedApp.id ? updatedApp : app))
-      );
-      setEditingApp(null);
-    } catch (error) {
-      console.error("Error updating application:", error);
-    }
+  const handleAdd = async (app: Omit<Application, 'id'>) => {
+    const newApp = await saveApplicationToFirestore(app);
+    setApplications((prev) => [...prev, newApp]);
   };
 
   const handleDelete = async (id: string) => {
-    try {
-      await deleteDoc(doc(db, "applications", id));
-      setApplications((prev) => prev.filter((app) => app.id !== id));
-    } catch (error) {
-      console.error("Error deleting application:", error);
-    }
+    await deleteApplicationFromFirestore(id);
+    setApplications((prev) => prev.filter((app) => app.id !== id));
+  };
+
+  const handleEdit = async (updatedApp: Application) => {
+    await updateApplicationInFirestore(updatedApp);
+    setApplications((prev) =>
+      prev.map((app) => (app.id === updatedApp.id ? updatedApp : app))
+    );
+    setEditApp(null);
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 px-4 py-10">
-      <div className="max-w-6xl mx-auto">
-<h1 className="text-4xl font-bold mb-10 text-center text-blue-800 tracking-wide">
-   Career Compass
-</h1>
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-100 to-pink-50 px-4 py-12">
+      <div className="max-w-5xl mx-auto text-center mb-10">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent animate-fade-in">
+          Career Compass <span className="text-2xl">🧭</span>
+        </h1>
+        <p className="mt-2 text-gray-600">Track, Manage & Conquer your job hunt</p>
+      </div>
 
+      <div className="bg-white/80 backdrop-blur-lg p-8 rounded-2xl shadow-xl max-w-4xl mx-auto animate-fade-up border border-gray-200">
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Job Application</h2>
+        <AddApplicationForm
+          onAdd={handleAdd}
+          onEditSubmit={handleEdit}
+          editApp={editApp}
+          clearEdit={() => setEditApp(null)}
+        />
+      </div>
 
-        <div className="bg-white shadow-xl rounded-2xl p-6 mb-10">
-          <AddApplicationForm
-            onAddApplication={handleAddApplication}
-            onUpdateApplication={handleUpdateApplication}
-            editingApp={editingApp}
-          />
-        </div>
-
-        <div className="bg-white shadow-xl rounded-2xl p-6">
-          {loading ? (
-            <p className="text-center text-gray-500">Loading applications...</p>
-          ) : (
-            <ApplicationList
-              applications={applications}
-              onDelete={handleDelete}
-              onEdit={setEditingApp}
-            />
-          )}
-        </div>
+      <div className="mt-12">
+        <ApplicationList
+          applications={applications}
+          onDelete={handleDelete}
+          onEdit={(app) => setEditApp(app)}
+        />
       </div>
     </main>
   );
