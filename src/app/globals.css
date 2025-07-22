@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer utilities {
+  /* Existing fade-in and fade-up animations */
   .animate-fade-in {
     animation: fadeIn 1s ease-out both;
   }
@@ -32,4 +33,54 @@
       transform: translateY(0);
     }
   }
+
+  /* --- New Blob Animations --- */
+  @keyframes blob {
+    0% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+      transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+  }
+
+  .animate-blob {
+    animation: blob 7s infinite cubic-bezier(0.64, 0.01, 0.28, 0.99);
+  }
+
+  /* Animation delays for the blobs (as used in page.tsx) */
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+}
+
+/* --- Optional: Custom Scrollbar Styling (outside @layer utilities) --- */
+/* This targets WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px; /* Width of the vertical scrollbar */
+  height: 8px; /* Height of the horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light gray track background */
+  border-radius: 10px; /* Rounded corners for the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* Gray-300 for the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* Gray-400 on hover */
 }
