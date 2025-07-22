@@ -10,6 +10,7 @@ import {
   updateApplicationInFirestore,
 } from '../lib/firebase';
 
+// Define Application type locally to match Firestore return
 export interface Application {
   id: string;
   company: string;
